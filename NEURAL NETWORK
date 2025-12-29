@@ -1,0 +1,46 @@
+import random
+import math
+
+def sigmoid(x):
+    return 1 / (1 + math.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+class NeuralNetwork:
+    def __init__(self, input_size, hidden_size, output_size):
+        # Initialize weights randomly
+        self.w1 = [[random.uniform(-1, 1) for _ in range(hidden_size)] for _ in range(input_size)]
+        self.w2 = [[random.uniform(-1, 1) for _ in range(output_size)] for _ in range(hidden_size)]
+        self.b1 = [random.uniform(-1, 1) for _ in range(hidden_size)]
+        self.b2 = [random.uniform(-1, 1) for _ in range(output_size)]
+
+    def forward(self, x):
+        # Hidden layer
+        self.z1 = [sum(x[i] * self.w1[i][j] for i in range(len(x))) + self.b1[j] for j in range(len(self.b1))]
+        self.a1 = [sigmoid(z) for z in self.z1]
+        # Output layer
+        self.z2 = [sum(self.a1[i] * self.w2[i][j] for i in range(len(self.a1))) + self.b2[j] for j in range(len(self.b2))]
+        self.a2 = [sigmoid(z) for z in self.z2]
+        return self.a2
+
+    def backward(self, x, y, lr=0.1):
+        # Output error
+        output_errors = [y[j] - self.a2[j] for j in range(len(y))]
+        d_output = [output_errors[j] * sigmoid_derivative(self.a2[j]) for j in range(len(y))]
+
+        # Hidden error
+        hidden_errors = [sum(d_output[k] * self.w2[j][k] for k in range(len(d_output))) for j in range(len(self.a1))]
+        d_hidden = [hidden_errors[j] * sigmoid_derivative(self.a1[j]) for j in range(len(self.a1))]
+
+        # Update weights w2
+        for i in range(len(self.a1)):
+            for j in range(len(d_output)):
+                self.w2[i][j] += lr * d_output[j] * self.a1[i]
+        # Update biases b2
+        for j in range(len(d_output)):
+            self.b2[j] += lr * d_output[j]
+
+        # Update weights w1
+        for i in range(len(x)):
+            for j
