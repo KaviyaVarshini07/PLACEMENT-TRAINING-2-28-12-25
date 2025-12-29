@@ -1,0 +1,6 @@
+
+with open("sample.txt", "w") as f:
+    f.write("Hello GitHub!\nThis is a file demo.")
+
+with open("sample.txt", "r") as f:
+    print("File content:\n", f.read())
